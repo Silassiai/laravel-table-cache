@@ -2,7 +2,7 @@
 
 namespace Silassiai\LaravelTableCache\Traits;
 
-class TableCacheKeyValueTrait
+trait TableCacheKeyValueTrait
 {
 
 }
