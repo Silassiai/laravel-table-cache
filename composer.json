@@ -1,0 +1,26 @@
+{
+    "name": "silassiai/laravel-table-cache",
+    "description": "Solution to easily cache tables records, the package uses the laravel Cache facade.",
+    "type": "library",
+    "license": "MIT",
+    "keywords": [
+        "silassiai",
+        "laravel",
+        "package",
+        "cache"
+    ],
+    "autoload": {
+        "psr-4": {
+            "Silassiai\\LaravelTableCache\\": "src/"
+        }
+    },
+    "authors": [
+        {
+            "name": "Silas de Rooy",
+            "email": "silasderooy@gmail.com"
+        }
+    ],
+    "require": {
+        "php": "^8"
+    }
+}
