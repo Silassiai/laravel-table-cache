@@ -4,6 +4,14 @@ Solution to easily cache tables records, the package uses the laravel Cache faca
 
 - Cache 2 table columns as key value pairs [Trait Key Value](#-trait-key-value)
 
+## Installation
+
+You can install the package via composer:
+
+```bash
+composer require silassiai/laravel-table-cache
+```
+
 ## Basic usage
 
 ### Trait Key Value
