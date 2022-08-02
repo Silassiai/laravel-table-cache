@@ -68,17 +68,13 @@ trait TableCacheKeyValueTrait
 
         throw_if(
             !in_array($cacheColumnKey, $columns, true),
-            ColumnNotFoundException::class,
-            ...[$cacheColumnKey, $table]
+            ColumnNotFoundException::class, ...[$cacheColumnKey, $table]
         );
 
-        if ($useCacheColumnValue) {
-            throw_if(
-                '' !== $cacheColumnValue && !in_array($cacheColumnValue, $columns, true),
-                ColumnNotFoundException::class,
-                ...[$cacheColumnValue, $table]
-            );
-        }
+        throw_if(
+            $useCacheColumnValue && '' !== $cacheColumnValue && !in_array($cacheColumnValue, $columns, true),
+            ColumnNotFoundException::class, ...[$cacheColumnValue, $table]
+        );
 
         static::class::chunk(500, static function ($records)
         use ($table, $cacheColumnKey, $cacheColumnValue, $cacheValue, $useCacheColumnValue) {
@@ -105,6 +101,6 @@ trait TableCacheKeyValueTrait
     {
         $model = app(static::class);
         $table = $model->getTable();
-        return Cache::has('silassiai:'. $table . ':cached');
+        return Cache::has('silassiai:' . $table . ':cached');
     }
 }
