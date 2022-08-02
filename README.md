@@ -31,3 +31,25 @@ class class User
     use TableCacheKeyValueTrait;
 }
 ```
+
+next add to your seeder:
+
+```php
+    public function run()
+    {
+        // Your seed code here...
+        
+        BlackList::forColumnKey(BlackList::NAME)->withColumnValue('your_column_name');
+    }
+```
+
+You can also use a default value:
+
+```php
+    public function run()
+    {
+        // Your seed code here...
+        
+        BlackList::forColumnKey(BlackList::NAME)->withValue(true);
+    }
+```
