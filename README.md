@@ -26,7 +26,7 @@ namespace App\Models;
 
 use Silassiai\LaravelTableCache\Traits\TableCacheKeyValueTrait;
 
-class class User
+class BlackList
 {
     use TableCacheKeyValueTrait;
 }
