@@ -2,7 +2,7 @@
 
 Solution to easily cache tables records, the package uses the laravel Cache facade.
 
-- Cache 2 table columns as key value pairs [Trait Key Value](#-trait-key-value)
+- Cache 2 table columns as key value pairs [Trait Key Value](#trait-key-value)
 
 ## Installation
 
