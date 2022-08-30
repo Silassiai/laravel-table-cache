@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Silassiai\LaravelTableCache\Traits;
 
+use App\Models\BlackList;
 use Illuminate\Support\Facades\Cache;
 use Silassiai\LaravelTableCache\Exceptions\ColumnNotFoundException;
 
@@ -18,9 +19,9 @@ trait TableCacheKeyValueTrait
 
     /**
      * @param string $cacheColumnKey
-     * @return self
+     * @return TableCacheKeyValueTrait|BlackList
      */
-    public static function forColumnKey(string $cacheColumnKey): self
+    public static function cacheColumnKey(string $cacheColumnKey): self
     {
         $model = app(static::class);
         $model->cacheColumnKey = $cacheColumnKey;
@@ -44,7 +45,7 @@ trait TableCacheKeyValueTrait
      * @param $cacheValue
      * @return self
      */
-    public function withValue($cacheValue): self
+    public function withDefaultValue($cacheValue): self
     {
         $this->cacheValue = $cacheValue;
 

@@ -39,7 +39,7 @@ next add to your seeder:
     {
         // Your seed code here...
         
-        BlackList::forColumnKey(BlackList::NAME)->withColumnValue('your_column_name');
+        BlackList::cacheColumnKey(BlackList::NAME)->withColumnValue('your_column_name');
     }
 ```
 
@@ -50,6 +50,12 @@ You can also use a default value:
     {
         // Your seed code here...
         
-        BlackList::forColumnKey(BlackList::NAME)->withValue(true);
+        BlackList::cacheColumnKey(BlackList::NAME)->withDefaultValue(true);
     }
+```
+
+To check if the table is already cached:
+
+```php
+BlackList::hasTableCached()
 ```
