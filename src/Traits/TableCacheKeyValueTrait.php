@@ -7,14 +7,17 @@ namespace Silassiai\LaravelTableCache\Traits;
 use App\Models\BlackList;
 use Illuminate\Support\Facades\Cache;
 use Silassiai\LaravelTableCache\Exceptions\ColumnNotFoundException;
+use Throwable;
 
 trait TableCacheKeyValueTrait
 {
+    /** @var string $cacheColumnKey */
     private string $cacheColumnKey;
-
+    /** @var string|null $cacheColumnValue */
     private ?string $cacheColumnValue = null;
-    private $cacheValue;
-
+    /** @var mixed $cacheValue */
+    private mixed $cacheValue;
+    /** @var bool $useCacheColumnValue */
     private bool $useCacheColumnValue = true;
 
     /**
@@ -30,12 +33,12 @@ trait TableCacheKeyValueTrait
 
     /**
      * @param string $cacheColumnValue
-     * @return self
+     * @return TableCacheKeyValueTrait|BlackList
+     * @throws Throwable
      */
     public function withColumnValue(string $cacheColumnValue): self
     {
         $this->cacheColumnValue = $cacheColumnValue;
-
         $this->cacheKeyValues();
 
         return $this;
@@ -43,23 +46,25 @@ trait TableCacheKeyValueTrait
 
     /**
      * @param $cacheValue
-     * @return self
+     * @return TableCacheKeyValueTrait|BlackList
+     * @throws Throwable
      */
     public function withDefaultValue($cacheValue): self
     {
         $this->cacheValue = $cacheValue;
-
         $this->notUseCacheColumnValue();
-
         $this->cacheKeyValues();
 
         return $this;
     }
 
+    /**
+     * @throws Throwable
+     */
     public function cacheKeyValues(): void
     {
         $model = app(static::class);
-        $table = $model->getTable();
+        $table = self::getTableName();
         $columns = $model->getConnection()->getSchemaBuilder()->getColumnListing($table);
 
         $cacheColumnKey = $this->cacheColumnKey;
@@ -77,8 +82,7 @@ trait TableCacheKeyValueTrait
             ColumnNotFoundException::class, ...[$cacheColumnValue, $table]
         );
 
-        static::class::chunk(500, static function ($records)
-        use ($table, $cacheColumnKey, $cacheColumnValue, $cacheValue, $useCacheColumnValue) {
+        static::class::chunk(500, static function ($records) use ($table, $cacheColumnKey, $cacheColumnValue, $cacheValue, $useCacheColumnValue) {
             foreach ($records as $record) {
                 Cache::forever(
                     $table . ':' . $record->{$cacheColumnKey},
@@ -86,9 +90,12 @@ trait TableCacheKeyValueTrait
                 );
             }
         });
-        Cache::forever('silassiai:' . $table . ':cached', true);
+        Cache::forever('silassiai:' . self::getTableName() . ':cached', true);
     }
 
+    /**
+     * @return void
+     */
     public function notUseCacheColumnValue(): void
     {
         $this->useCacheColumnValue = false;
@@ -100,8 +107,23 @@ trait TableCacheKeyValueTrait
      */
     public static function hasTableCached(): bool
     {
-        $model = app(static::class);
-        $table = $model->getTable();
-        return Cache::has('silassiai:' . $table . ':cached');
+        return Cache::has('silassiai:' . self::getTableName() . ':cached');
+    }
+
+    /**
+     * @return string
+     */
+    public static function getTableName(): string
+    {
+        return app(static::class)->getTable();
+    }
+
+    /**
+     * @param string $cacheKey
+     * @return bool
+     */
+    public static function hasCacheKey(string $cacheKey): bool
+    {
+        return Cache::has(self::getTableName().':'.$cacheKey);
     }
 }
