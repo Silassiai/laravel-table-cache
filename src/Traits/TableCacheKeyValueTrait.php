@@ -12,7 +12,7 @@ use Throwable;
 trait TableCacheKeyValueTrait
 {
     /** @var string $cacheColumnKey */
-    private string $cacheColumnKey;
+    private ?string $cacheColumnKey = null;
     /** @var string|null $cacheColumnValue */
     private ?string $cacheColumnValue = null;
     /** @var mixed $cacheValue */
@@ -63,7 +63,7 @@ trait TableCacheKeyValueTrait
      */
     public function cacheKeyValues(): void
     {
-        $model = app(static::class);
+        $model = $this;
         $table = self::getTableName();
         $columns = $model->getConnection()->getSchemaBuilder()->getColumnListing($table);
 
@@ -82,15 +82,15 @@ trait TableCacheKeyValueTrait
             ColumnNotFoundException::class, ...[$cacheColumnValue, $table]
         );
 
-        static::class::chunk(500, static function ($records) use ($table, $cacheColumnKey, $cacheColumnValue, $cacheValue, $useCacheColumnValue) {
+        static::class::chunk(500, static function ($records) use ($table, $cacheColumnKey, $cacheColumnValue, $cacheValue, $useCacheColumnValue, $model) {
             foreach ($records as $record) {
                 Cache::forever(
-                    $table . ':' . $record->{$cacheColumnKey},
+                    $table . ':' . $model->cacheColumnKey . ':' . $record->{$cacheColumnKey},
                     $useCacheColumnValue ? $record->{$cacheColumnValue} : $cacheValue
                 );
             }
         });
-        Cache::forever('silassiai:' . self::getTableName() . ':cached', true);
+        Cache::forever('silassiai:' . $table . ':' . $model->cacheColumnKey . ':cached', true);
     }
 
     /**
@@ -103,11 +103,12 @@ trait TableCacheKeyValueTrait
 
     /**
      * To see if the table has been cached with this package
+     * @param $key
      * @return bool
      */
-    public static function hasTableCached(): bool
+    public static function hasTableKeyCached($key): bool
     {
-        return Cache::has('silassiai:' . self::getTableName() . ':cached');
+        return Cache::has('silassiai:' . self::getTableName() . ':' . $key . ':cached');
     }
 
     /**
@@ -122,8 +123,17 @@ trait TableCacheKeyValueTrait
      * @param string $cacheKey
      * @return bool
      */
-    public static function hasCacheKey(string $cacheKey): bool
+    public function isCached(string $cacheKey): bool
     {
-        return Cache::has(self::getTableName().':'.$cacheKey);
+        return Cache::has(self::getTableName().':'. $this->cacheColumnKey . ':' .$cacheKey);
+    }
+
+    /**
+     * @param string $cacheKey
+     * @return bool
+     */
+    public function getKeyValue(string $cacheKey): bool
+    {
+        return Cache::get(self::getTableName().':'. $this->cacheColumnKey . ':' .$cacheKey);
     }
 }
