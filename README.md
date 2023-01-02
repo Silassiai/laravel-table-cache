@@ -1,4 +1,4 @@
-## About laravel-table-cache
+## About laravel-table-cache (Work in progress)
 
 If you are working with a lot of data, it may not be best practice to work with collections (who are cached by laravel).
 
